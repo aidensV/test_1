@@ -6,7 +6,7 @@
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">×</span></button>
-            <h4 class="modal-title titleform">Form Barang</h4>
+            {{-- <h4 class="modal-title titleform">Form Barang</h4> --}}
           </div>
           <div class="modal-body">
 
@@ -33,7 +33,7 @@
               <input type="number" class="form-control text-right nocoma" value="0" name="jumlah">
               <label class="fmt-nominal pull-right">0</label>
             </div>
-        
+
             <div class="form-group col-md-6">
               <label for="exampleInputPassword1">Total</label>
               <input type="number" class="form-control text-right money" readonly="" value="0" name="total" >
