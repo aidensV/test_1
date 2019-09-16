@@ -29,7 +29,7 @@
 
     <div class="col-md-12">
       <div class="box box-primary">
-      
+
         <!-- /.box-header -->
         <div class="box-body">
 
@@ -88,7 +88,7 @@
         </div>
         <!-- /.box-body -->
         <div class="box-footer">
-          <a href="" class="btn btn-md btn-warning">Kembali</a>
+          <a href="" class="btn btn-md btn-warning">Reset</a>
           <button type="submit" class="btn bg-blue btn-md pull-right"><span class="glyphicon glyphicon-floppy-disk"></span> Simpan</button>
         </div>
 
