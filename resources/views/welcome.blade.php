@@ -11,7 +11,7 @@
         <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css" rel="stylesheet">
         <link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" rel="stylesheet">
-
+<       <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/css/select2.min.css" rel="stylesheet" />
         <!-- Styles -->
         <style>
             html, body {
@@ -90,6 +90,9 @@
                   <li class="nav-item">
                       <a class="nav-link" href="{{url('data_owner')}}">Data Owner</a>
                   </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="{{url('sales')}}">Sales</a>
+                  </li>
 
 
               </ul>
@@ -122,15 +125,20 @@
                 @yield('content')
 
             </div>
-        </div>
+        </div>    
     </body>
     <script src="https://code.jquery.com/jquery-3.3.1.js" charset="utf-8"></script>
     <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js" charset="utf-8"></script>
     <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js" charset="utf-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
     <script type="text/javascript">
         $(document).ready(function() {
             $('#example').DataTable();
         });
     </script>
+
+  @yield('js')
 </html>

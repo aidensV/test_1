@@ -14,7 +14,9 @@
 Route::get('/', function () {
     return view('menu');
 });
+Route::get('get_data_barang/{id}','salesController@get_data_barang');
 Route::resource('data_unit','UnitController');
 Route::resource('data_owner','OwnerController');
 Route::resource('data_item','ItemController');
 Route::resource('data_stock','StockController');
+Route::resource('sales','salesController');
