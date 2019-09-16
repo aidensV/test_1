@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Sep 11, 2019 at 02:31 PM
+-- Generation Time: Sep 16, 2019 at 02:17 PM
 -- Server version: 5.7.27-0ubuntu0.18.04.1
 -- PHP Version: 7.2.19-0ubuntu0.18.04.2
 
@@ -19,6 +19,64 @@ SET time_zone = "+00:00";
 --
 -- Database: `db_test1`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `d_sales`
+--
+
+CREATE TABLE `d_sales` (
+  `id` int(20) NOT NULL,
+  `date` date NOT NULL,
+  `nota` varchar(20) NOT NULL,
+  `total` bigint(15) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `d_sales`
+--
+
+INSERT INTO `d_sales` (`id`, `date`, `nota`, `total`) VALUES
+(1, '2019-09-16', '001/BRT/IX/2019', 27),
+(2, '2019-09-16', '', 4),
+(3, '2019-09-16', '', 4),
+(4, '2019-09-16', '', 4),
+(5, '2019-09-16', '', 4),
+(6, '2019-09-16', '', 4),
+(7, '2019-09-16', '', 4),
+(8, '2019-09-16', '', 15),
+(9, '2019-09-16', '', 267),
+(10, '2019-09-16', '', 41),
+(11, '2019-09-16', '', 30),
+(12, '2019-09-16', '', 37),
+(13, '2019-09-16', '', 62458),
+(14, '2019-09-16', '', 62458),
+(15, '2019-09-16', '', 120046);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `d_sales_dt`
+--
+
+CREATE TABLE `d_sales_dt` (
+  `sales_id` int(20) NOT NULL,
+  `detail_id` int(20) NOT NULL,
+  `item_id` int(20) NOT NULL,
+  `qty` int(20) NOT NULL,
+  `value` bigint(15) NOT NULL,
+  `total_net` bigint(15) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `d_sales_dt`
+--
+
+INSERT INTO `d_sales_dt` (`sales_id`, `detail_id`, `item_id`, `qty`, `value`, `total_net`) VALUES
+(14, 0, 2, 6, 5688, 34128),
+(14, 1, 2, 5, 5666, 28330),
+(15, 0, 2, 877, 98, 85946);
 
 -- --------------------------------------------------------
 
@@ -101,6 +159,18 @@ INSERT INTO `m_unit` (`u_id`, `u_name`) VALUES
 --
 
 --
+-- Indexes for table `d_sales`
+--
+ALTER TABLE `d_sales`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `d_sales_dt`
+--
+ALTER TABLE `d_sales_dt`
+  ADD PRIMARY KEY (`sales_id`,`detail_id`);
+
+--
 -- Indexes for table `d_stock`
 --
 ALTER TABLE `d_stock`
@@ -128,6 +198,11 @@ ALTER TABLE `m_unit`
 -- AUTO_INCREMENT for dumped tables
 --
 
+--
+-- AUTO_INCREMENT for table `d_sales`
+--
+ALTER TABLE `d_sales`
+  MODIFY `id` int(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 --
 -- AUTO_INCREMENT for table `d_stock`
 --
