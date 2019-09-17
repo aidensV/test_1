@@ -13,8 +13,16 @@
             <div class="box-body">
 
               <div class="form-group">
+               <label for="exampleInputPassword1">Nama Owner</label>
+               <select name="o_id" id="o_id" class="form-control js-example-basic-single" style="width: 100%;">
+                 @foreach ($owner as $list)
+                 <option value="{{$list->o_id}}">{{$list->o_name}}</option>
+                @endforeach
+              </select>
+            </div>
+              <div class="form-group">
                <label for="exampleInputPassword1">Nama Barang</label>
-               <select name="id_barang" id="id_barang" class="form-control" style="width: 100%;">
+               <select name="id_barang" id="id_barang" class="form-control js-example-basic-single" style="width: 100%;">
                  @foreach ($item as $list)
                  <option value="{{$list->i_id}}">{{$list->i_name}}</option>
                 @endforeach
@@ -30,7 +38,7 @@
 
             <div class="form-group col-md-6">
               <label for="exampleInputPassword1">Qty</label>
-              <input type="number" class="form-control text-right nocoma" value="0" name="jumlah">
+              <input type="number" class="form-control text-right nocoma" onblur="cekQty(this.value)" value="0" name="jumlah">
               <label class="fmt-nominal pull-right">0</label>
             </div>
 
@@ -39,6 +47,8 @@
               <input type="number" class="form-control text-right money" readonly="" value="0" name="total" >
               <label class="fmt-nominal pull-right">0,00</label>
             </div>
+            <p id="message_qty" style="color:red;font-weight:bold"></p>
+            {{-- <label class="pull-right">0</label> --}}
 
             </div>
           </div>
@@ -47,7 +57,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-warning pull-left" data-dismiss="modal">Batal</button>
-          <button type="submit" class="btn btn-success pull-right">Simpan</button>
+          <button id="btn_simpan" type="submit" class="btn btn-success pull-right">Simpan</button>
         </div>
       </form>
     </div>

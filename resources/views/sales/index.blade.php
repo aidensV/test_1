@@ -5,21 +5,7 @@
 <!-- DataTables -->
 {{-- <link rel="stylesheet" href="{{asset('public/admin/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css')}}"> --}}
 
-<style>
-    .example-modal .modal {
-      position: relative;
-      top: auto;
-      bottom: auto;
-      right: auto;
-      left: auto;
-      display: block;
-      z-index: 1;
-    }
 
-    .example-modal .modal {
-      background: transparent !important;
-    }
-  </style>
 
 <!-- Content Header (Page header) -->
 <!-- Main content -->
@@ -33,7 +19,7 @@
         <!-- /.box-header -->
         <div class="box-body">
 
-          <form role="form" class="form_belanja" action="{{route('sales.store')}}" method="post">
+          <form id="form-table" role="form" class="form_belanja"  method="post">
               {{ csrf_field() }} {{ method_field('POST') }}
             <div class="box-body">
 
@@ -89,7 +75,7 @@
         <!-- /.box-body -->
         <div class="box-footer">
           <a href="" class="btn btn-md btn-warning">Reset</a>
-          <button type="submit" class="btn bg-blue btn-md pull-right"><span class="glyphicon glyphicon-floppy-disk"></span> Simpan</button>
+          <button type="button" onclick="saveToDatabase()" class="btn bg-blue btn-md pull-right"><span class="glyphicon glyphicon-floppy-disk"></span> Simpan</button>
         </div>
 
       </form>
@@ -115,9 +101,47 @@
 {{-- <script src="{{asset('public/admin/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js')}}"></script> --}}
 {{-- <script src="{{asset('public/admin/bower_components/select2/dist/js/select2.full.min.js')}}"></script> --}}
 <script src="{{asset('js/accounting.js')}}" charset="utf-8"></script>
+{{-- <script src="{{asset('js/selectChain.js')}}" charset="utf-8"></script> --}}
 
 <script type="text/javascript">
 
+// Cek Qty Ajax
+function cekQty(qty){
+  var id_item = $("#id_barang").val();
+  axios({
+  method: 'get',
+  url: 'cek_qty/'+id_item,
+  responseType: 'stream'
+})
+  .then(function (response) {
+    if (qty <= response.data) {
+      document.getElementById("btn_simpan").disabled = false;
+    }else{
+      $("#message_qty").html("Stok Tersedia : <b style='color:black'>"+response.data+"</b>");
+      document.getElementById("btn_simpan").disabled = true;
+      // $("#btn_simpan").html("Stok Tersedia : <b style='color:black'>"+response.data+"</b>");
+    }
+    // response.data.pipe(fs.createWriteStream('ada_lovelace.jpg'))
+  });
+}
+
+// save Data
+function saveToDatabase() {
+
+  var form = $('#form-table');
+  var data = form.serialize();
+
+// var total = $('.form_barang input[name=total]').val();
+  axios({
+  method: 'post',
+  url: "{{route('sales.store')}}",
+  headers: {},
+  data: data,
+});
+
+$('#form-table')[0].reset();
+form.reset();
+}
 var formBarang = $(".form_barang");
 
   var formBelanja = $(".form_belanja");
@@ -146,20 +170,59 @@ var formBarang = $(".form_barang");
     };
 
     var rowtempx=null;
-    $('.select2').select2();
+// Initial Select 2 js
+    $(document).ready(function() {
+      $("#id_barang").select2({
+        dropdownParent: $("#modal-form"),
+        placeholder: 'Pilih Nama Barang',
+        language: "id"
+      });
 
+      $('#o_id').select2({
+        dropdownParent: $("#modal-form"),
+        placeholder: 'Pilih Nama Owner',
+        language: "id"
+      });
+    });
 
-    $('#id_barang').on('change', function(e){
-        var state_id = e.target.value;
-
-        $.get('{{ url('get_data_barang') }}'+ '/' + state_id, function(data) {
-            $('#barang_harga').empty();
-            // $.each(data, function(index,subCatObj){
-            //     $('#barang_harga').val(''+subCatObj.log_stok_saldo_harga+'');
-            // });
-                $('#barang_harga').val(''+data.i_id_unit+'');
+    // Select2 js Chained
+    $(document).ready(function()
+    {
+        $('select[name="o_id"]').on('change', function() {
+            var provID = $(this).val();
+            if(provID) {
+                $.ajax({
+                    url: 'get_data_barang/'+provID,
+                    type: "GET",
+                    dataType: "json",
+                    success:function(data) {
+                        $('select[name="id_barang"]').empty();
+                        $.each(data, function(key, value) {
+                          // console.log(value.s_id_owner);
+                            $('select[name="id_barang"]').append('<option value="'+ value.i_id +'">'+ value.i_name +'</option>');
+                        });
+                    }
+                });
+            }else{
+                $('select[name="id_barang"]').empty();
+            }
         });
     });
+
+
+    //
+    // $('#id_barang').on('change', function(e){
+    //     var state_id = e.target.value;
+    //
+    //     $.get('{{ url('get_data_barang') }}'+ '/' + state_id, function(data) {
+    //         $('#barang_harga').empty();
+    //         // $.each(data, function(index,subCatObj){
+    //         //     $('#barang_harga').val(''+subCatObj.log_stok_saldo_harga+'');
+    //         // });
+    //             $('#barang_harga').val(''+data.i_id_unit+'');
+    //     });
+    // });
+
     // $(document).on("change", ".form_barang select[name=id_barang]", function(){
     //   var idbarang = $(this).val();
     //   $.ajax({
@@ -212,7 +275,7 @@ var formBarang = $(".form_barang");
       // $('.form_barang input[name=total]').val(total).keyup();
 
       rowtempx=$(this).parents('tr');
-      console.log(rowtempx);
+      // console.log(rowtempx);
       showModal("#modal-form");
 
     });
@@ -229,6 +292,17 @@ var formBarang = $(".form_barang");
       var barang_harga = $('.form_barang input[name=barang_harga]').val();
       var jumlah = $('.form_barang input[name=jumlah]').val();
       var total = $('.form_barang input[name=total]').val();
+
+      // kurangi stok
+      axios({
+      method: 'post',
+      url: 'kurangi_stock',
+      data: {
+        id_barang: id_barang,
+        qty: jumlah
+        }
+      });
+
       var attr=" nama_barang='"+nama_barang+"' id_barang='"+id_barang+"' total='"+total+"' jumlah='"+jumlah+"'  barang_harga='"+barang_harga+"' ";
       var row=""+
       // "<td>"+nama_barang+"<input type='hidden' readonly='' value='"+id_barang+"' name='id_barang[]' ><input type='hidden' readonly='' value='"+barang_harga.val()+"' name='barang_harga[]' ></td>"+
@@ -285,8 +359,12 @@ var formBarang = $(".form_barang");
     });
 
     $(document).on("click"," .btn_del",function(e){
-      $(this).parents('tr').remove();
-      reload_table();
+      // kurangi stok
+      // console.log(;
+
+      // $(this).parents('tr').remove();
+
+      // reload_table();
     });
 
     function reload_table(){
@@ -299,7 +377,7 @@ var formBarang = $(".form_barang");
         // console.log(xbarang);
       });
   var details_id=$(".form_barang input[name=detail_id]").val();
-    console.log(details_id);
+    // console.log(details_id);
 
       $('table.table-barang  tfoot tr.footercount .total ').html(accounting.formatMoney(xbarang));
       // $('table.table-pembayaran  tfoot tr.footercount .total ').html(accounting.formatMoney(xbayar));

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Sales;
 use App\Item;
 use App\DetailSales;
+use App\Stock;
+use App\Owner;
 
 use Illuminate\Http\Request;
 
@@ -18,7 +20,10 @@ class salesController extends Controller
     public function index()
     {
         $item = Item::all();
-        return view('sales.index',compact('item'));
+        $owner = Owner::all();
+        // $owner = Stock::join('m_owner','s_id_owner','=','o_id')->join('m_item','s_id_item','=','i_id')->get();
+        // dd($owner);
+        return view('sales.index',compact('item','owner'));
     }
 
     /**
@@ -39,6 +44,8 @@ class salesController extends Controller
      */
     public function store(Request $request)
     {
+
+      // dd($request->all());
 
       $nom = Sales::max('id');
       $bulanRomawi = array("", "I","II","III", "IV", "V","VI","VII","VIII","IX","X", "XI","XII");
@@ -130,10 +137,66 @@ class salesController extends Controller
     {
         //
     }
-    public function get_data_barang($id)
+    public function get_data_barang($request)
     {
-      $item = Item::find($id);
+      $item = Stock::join('m_owner','s_id_owner','=','o_id')
+      ->join('m_item','s_id_item','=','i_id')
+      ->where('s_id_owner',$request)
+      ->get();
+
+      // $item = Item::find($id);
       // dd($item);
+      // return response()->json(['item' => $item], 200);
+      // return json_encode($item);
       return $item;
     }
+    public function cek_qty($qty)
+    {
+      $qty = Stock::where('s_id_item',$qty)->value('s_qty');
+      return $qty;
+    }
+
+    public function kurangi_stock(Request $request)
+    {
+      $get_item = Stock::where('s_id_item',$request->id_barang)->get();
+      $qtyAwal = '';
+      $id_item = '';
+
+      foreach ($get_item as $key => $value) {
+        $id_item = $value->s_id;
+        $qtyAwal = $value->s_qty;
+      }
+
+      $qtyTotal = $qtyAwal - (int)$request->qty ;
+
+      $stock = Stock::find($id_item);
+      // $stock
+      $stock->s_qty = $qtyTotal;
+      $stock->update();
+
+      // return $qty;
+    }
+    public function tambahi_stock(Request $request)
+    {
+      // return $request
+      // $get_item = Stock::where('s_id_item',$request->id_barang)->get();
+      // $qtyAwal = '';
+      // $id_item = '';
+      //
+      // foreach ($get_item as $key => $value) {
+      //   $id_item = $value->s_id;
+      //   $qtyAwal = $value->s_qty;
+      // }
+      //
+      // $qtyTotal = $qtyAwal - (int)$request->qty ;
+      //
+      // $stock = Stock::find($id_item);
+      // // $stock
+      // $stock->s_qty = $qtyTotal;
+      // $stock->update();
+
+      // return $qty;
+    }
+
+
 }
