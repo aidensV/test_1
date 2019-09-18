@@ -11,7 +11,12 @@
 |
 */
 
-Route::get('/', function () {
+
+Auth::routes();
+Route::get('/', 'HomeController@index')->name('home');
+Route::group(['middleware' => 'auth'], function () {
+
+Route::get('/home', function () {
     return view('menu');
 });
 Route::get('get_data_barang/{id}','salesController@get_data_barang');
@@ -25,3 +30,7 @@ Route::resource('data_owner','OwnerController');
 Route::resource('data_item','ItemController');
 Route::resource('data_stock','StockController');
 Route::resource('sales','salesController');
+Route::get('data_user','UserController@listData')->name('data_user');
+Route::PATCH('master_user_change_password/{id}','UserController@update_password');
+Route::resource('master_user','UserController');
+});

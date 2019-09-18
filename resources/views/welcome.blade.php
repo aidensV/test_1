@@ -96,6 +96,9 @@
                   <li class="nav-item">
                       <a class="nav-link" href="{{url('sales')}}">Sales</a>
                   </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="{{url('master_user')}}">Manajemen User</a>
+                  </li>
 
 
               </ul>
@@ -108,15 +111,15 @@
         <div class="flex-center position-ref full-height">
             @if (Route::has('login'))
                 <div class="top-right links">
-                    @auth
-                        <a href="{{ url('/home') }}">Home</a>
-                    @else
-                        <a href="{{ route('login') }}">Login</a>
+                  <a class="dropdown-item" href="{{ route('logout') }}"
+                     onclick="event.preventDefault();
+                                   document.getElementById('logout-form').submit();">
+                      {{ __('Logout') }}
+                  </a>
 
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}">Register</a>
-                        @endif
-                    @endauth
+                  <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                      @csrf
+                  </form>
                 </div>
             @endif
 
@@ -140,7 +143,7 @@
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script src="{{asset('assets/select2/js/select2.full.min.js')}}" charset="utf-8"></script>
   <script src="{{asset('js/plugins-init/select2-init.js')}}" charset="utf-8"></script>
-
+  <script src="{{asset('js/validator.js')}}" charset="utf-8"></script>
     <script type="text/javascript">
         $(document).ready(function() {
             $('#example').DataTable();
