@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Item;
 use App\Stock;
 use App\Owner;
+use Auth;
 
 class StockController extends Controller
 {
@@ -16,7 +17,9 @@ class StockController extends Controller
      */
     public function index()
     {
-      $stock = Stock::join('m_item','s_id_item','=','i_id')->join('m_owner','s_id_owner','=','o_id')->get();
+      $id_owner = Auth::User()->owner_id;
+
+      $stock = Stock::join('m_item','s_id_item','=','i_id')->join('m_owner','s_id_owner','=','o_id')->where('s_id_owner',$id_owner)->get();
       // dd($item);
       return view('data_stock.index',compact('stock'))->with('no',1);
     }
@@ -29,7 +32,9 @@ class StockController extends Controller
     public function create()
     {
       $item = Item::all();
-      $owner = Owner::all();
+      $id_owner = Auth::User()->owner_id;
+      $owner = Owner::where('o_id',$id_owner)->get();
+
       // dd($owner);
       return view('data_stock.create',compact('item','owner'));
     }
@@ -72,7 +77,8 @@ class StockController extends Controller
     {
       $stock = Stock::find($id);
       $item = Item::all();
-      $owner = Owner::all();
+      $id_owner = Auth::User()->owner_id;
+      $owner = Owner::where('o_id',$id_owner)->get();
 
       return view('data_stock.edit',compact('item','owner','stock'));
     }

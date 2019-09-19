@@ -19,6 +19,7 @@ Route::group(['middleware' => 'auth'], function () {
 Route::get('/home', function () {
     return view('menu');
 });
+Route::get('get_harga_barang/{id}','salesController@get_harga_barang');
 Route::get('get_data_barang/{id}','salesController@get_data_barang');
 Route::get('cek_qty/{qty}','salesController@cek_qty');
 Route::post('kurangi_stock','salesController@kurangi_stock');

@@ -12,6 +12,7 @@
                         <th>No</th>
                         <th>Nama</th>
                         <th>Satuan</th>
+                        <th>Harga</th>
                         <th>Aksi</th>
 
                     </tr>
@@ -23,6 +24,7 @@
                         <td>{{$no++}}</td>
                         <td>{{$data->i_name}}</td>
                         <td>{{$data->u_name}}</td>
+                        <td>{{number_format($data->i_price,2,',','.')}}</td>
                         <td>
                             <form action="{{route('data_item.destroy',$data->i_id)}}" method="post">
                                 <a href="{{route('data_item.edit',$data->i_id)}}" class="btn btn-success" data-toggle="tooltip" data-placement="botttom" title="Detail Data" style="color:white;">Edit</a>

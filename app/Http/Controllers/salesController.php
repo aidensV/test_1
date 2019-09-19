@@ -7,6 +7,7 @@ use App\Item;
 use App\DetailSales;
 use App\Stock;
 use App\Owner;
+use Auth;
 
 use Illuminate\Http\Request;
 
@@ -19,8 +20,9 @@ class salesController extends Controller
      */
     public function index()
     {
+      $id_owner = Auth::User()->owner_id;
         $item = Item::all();
-        $owner = Owner::all();
+        $owner = Owner::where('o_id',$id_owner)->get();
         // $owner = Stock::join('m_owner','s_id_owner','=','o_id')->join('m_item','s_id_item','=','i_id')->get();
         // dd($owner);
         return view('sales.index',compact('item','owner'));
@@ -150,6 +152,17 @@ class salesController extends Controller
       // return json_encode($item);
       return $item;
     }
+
+    public function get_harga_barang($id)
+    {
+
+      $item = Item::where('i_id',$id)->value('i_price');
+      // dd($item);
+      // return response()->json(['item' => $item], 200);
+      return json_encode($item);
+      // return $item;
+    }
+
     public function cek_qty($qty)
     {
       $qty = Stock::where('s_id_item',$qty)->value('s_qty');
@@ -178,24 +191,25 @@ class salesController extends Controller
     }
     public function tambahi_stock(Request $request)
     {
-      // return $request
-      // $get_item = Stock::where('s_id_item',$request->id_barang)->get();
-      // $qtyAwal = '';
-      // $id_item = '';
-      //
-      // foreach ($get_item as $key => $value) {
-      //   $id_item = $value->s_id;
-      //   $qtyAwal = $value->s_qty;
-      // }
-      //
-      // $qtyTotal = $qtyAwal - (int)$request->qty ;
-      //
-      // $stock = Stock::find($id_item);
-      // // $stock
-      // $stock->s_qty = $qtyTotal;
-      // $stock->update();
+      $get_item = Stock::where('s_id_item',$request->id_barang_del)->get();
+      $qtyAwal = '';
+      $id_item = '';
 
-      // return $qty;
+      foreach ($get_item as $key => $value) {
+        $id_item = $value->s_id;
+        $qtyAwal = $value->s_qty;
+      }
+
+      $qtyTotal = $qtyAwal + $request->qty ;
+
+      $stock = Stock::find($id_item);
+      // $stock
+      $stock->s_qty = $qtyTotal;
+      $stock->update();
+
+      return response()->json(['stock' => $stock], 200);
+
+
     }
 
 

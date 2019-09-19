@@ -210,17 +210,17 @@ var formBarang = $(".form_barang");
 
 
     //
-    // $('#id_barang').on('change', function(e){
-    //     var state_id = e.target.value;
-    //
-    //     $.get('{{ url('get_data_barang') }}'+ '/' + state_id, function(data) {
-    //         $('#barang_harga').empty();
-    //         // $.each(data, function(index,subCatObj){
-    //         //     $('#barang_harga').val(''+subCatObj.log_stok_saldo_harga+'');
-    //         // });
-    //             $('#barang_harga').val(''+data.i_id_unit+'');
-    //     });
-    // });
+    $('#id_barang').on('change', function(e){
+        var state_id = e.target.value;
+        // console.log(state_id);
+        $.get('{{ url('get_harga_barang') }}'+ '/' + state_id, function(data) {
+            $('#barang_harga').empty();
+            // $.each(data, function(index,subCatObj){
+            //     $('#barang_harga').val(''+subCatObj.log_stok_saldo_harga+'');
+            // });
+                $('#barang_harga').val(''+data+'');
+        });
+    });
 
     // $(document).on("change", ".form_barang select[name=id_barang]", function(){
     //   var idbarang = $(this).val();
@@ -318,10 +318,10 @@ var formBarang = $(".form_barang");
       // "<td class='text-right'><input type='' readonly value='"+60+"' class='text-right' name='tot[]' style='background:none;border:0;'></td>"+
       "<td class='text-right'><input type='' readonly value='"+accounting.formatMoney(total)+"' class='text-right'  style='background:none;border:0;'></td>"+
       // "<td class='text-right'><input type='' readonly value='88' class='text-right' name='detail_id' id='detail_id' style='background:none;border:0;'></td>"+
-      "<td><a class='btn btn-danger btn-xs btn_del' style='color:white'>Hapus</a></td>";
+      "<td><a class='btn btn-danger btn-xs btn_del' data-id='2' style='color:white'>Hapus</a></td>";
 
     if(crud=="tambah"){
-      $('table.table-barang tbody').append("<tr>"+row+"</tr>");
+      $('table.table-barang tbody').append("<tr id='"+ id_barang +"' qty='"+ jumlah +"'>"+row+"</tr>");
 
      }else if(crud=="edit"){
       $(rowtempx).html(row);
@@ -358,12 +358,29 @@ var formBarang = $(".form_barang");
     });
 
     $(document).on("click"," .btn_del",function(e){
+      var id_barang_del = $(this).parents('tr:first').attr('id');
+      var qty_del = $(this).parents('tr:first').attr('qty');
+      // console.log(qty_del);
+      ;
+      // console.log($( e.target ).children());
+      // console.log($( e.target ).children('0'));
+      // console.log($(this).parents('tr:first').children('1:td'));
+      // console.log(id_barang_del);
+      // console.log( $(this).parents('tr'));
+      // console.log( $(this).parents('tr:first').attr('id'));
       // kurangi stok
       // console.log(;
+      axios({
+      method: 'post',
+      url: 'tambahi_stock',
+      data: {
+        id_barang_del: id_barang_del,
+        qty: qty_del
+        }
+      });
+      $(this).parents('tr').remove();
 
-      // $(this).parents('tr').remove();
-
-      // reload_table();
+      reload_table();
     });
 
     function reload_table(){

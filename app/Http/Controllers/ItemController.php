@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Item;
 use App\Unit;
+use Auth;
 
 class ItemController extends Controller
 {
@@ -15,6 +16,8 @@ class ItemController extends Controller
      */
     public function index()
     {
+
+
         $item = Item::join('m_unit','i_id_unit','=','u_id')->get();
         // dd($item);
         return view('data_item.index',compact('item'))->with('no',1);
@@ -43,6 +46,7 @@ class ItemController extends Controller
       $item = new Item;
       $item->i_name = $request['i_name'] ;
       $item->i_id_unit = $request['i_id_unit'] ;
+      $item->i_price = $request['i_price'] ;
       $item->save();
       // dd($item);
       return redirect('data_item');
@@ -85,6 +89,7 @@ class ItemController extends Controller
       $item = Item::find($id);
       $item->i_name = $request['i_name'] ;
       $item->i_id_unit = $request['i_id_unit'] ;
+      $item->i_price = $request['i_price'] ;
       $item->update();
       // dd($item);
       return redirect('data_item');

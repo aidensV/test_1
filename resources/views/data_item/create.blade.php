@@ -15,6 +15,10 @@
                     @endforeach
                     </select>
                 </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Harga</label>
+                    <input type="text" name="i_price" class="form-control"  placeholder="Nama">
+                </div>
 
                 <button type="submit" class="btn btn-primary">Simpan</button>
             </form>
