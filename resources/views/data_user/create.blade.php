@@ -18,10 +18,10 @@
               <div class="form-group" id="div1">
                <label for="exampleInputPassword1">Nama Owner</label>
                <select name="o_id" id="o_id" class="form-control js-example-basic-single" style="width: 100%;">
-                 {{-- @foreach ($owner as $list)
+                 @foreach ($owner as $list)
                  <option value="{{$list->o_id}}">{{$list->o_name}}</option>
-                @endforeach --}}
-                <option value="2">ds</option>
+                @endforeach 
+                <!-- <option value="2">ds</option> -->
               </select>
             </div>
               <div class="form-group" id="div2">

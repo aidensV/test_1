@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
+use App\Owner;
 
 class UserController extends Controller
 {
@@ -14,7 +15,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        return view('data_user.index');
+        $owner = Owner::all();
+        return view('data_user.index',compact('owner'));
     }
 
     /**
@@ -101,7 +103,7 @@ class UserController extends Controller
 
     public function listData()
     {
-      $users = User::orderBy('id', 'ASC')->get();
+      $users = User::join('m_owner','owner_id','=','o_id')->orderBy('id', 'ASC')->get();
         $no = 0;
         $data = array();
         foreach ($users as $list) {
@@ -109,7 +111,7 @@ class UserController extends Controller
             $no++;
             $row = array();
             $row[] = $no;
-            $row[] = $list->owner_id;
+            $row[] = $list->o_name;
             $row[] = $list->username;
             $row[] = '<a onclick="editForm('.$list->id.')" class="btn btn-primary" data-toggle="tooltip" data-placement="botttom" title="Edit Data"  style="color:white; margin:5px">Edit</a>
             <a onclick="deleteData('.$list->id.')" class="btn btn-danger" data-toggle="tooltip" data-placement="botttom" title="Hapus Data" style="color:white; margin:5px">Hapus</a>
