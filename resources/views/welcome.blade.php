@@ -13,7 +13,7 @@
         <!-- Latest compiled and minified CSS -->
 {{-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> --}}
         <link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" rel="stylesheet">
-<       <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6/css/select2.min.css" rel="stylesheet" />
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6/css/select2.min.css" rel="stylesheet" />
 {{-- <script src="{{asset('assets/select2/css/select2.min.css')}}" charset="utf-8"></script> --}}
         <!-- Styles -->
         <style>
@@ -69,7 +69,7 @@
             }
         </style>
     </head>
-    <body>
+    <body id="body">
       <nav class="navbar navbar-expand-lg navbar-light bg-light">
           <a class="navbar-brand" href="#">0o0</a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -95,6 +95,9 @@
                   </li>
                   <li class="nav-item">
                       <a class="nav-link" href="{{url('sales')}}">Sales</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="{{url('distribution')}}">Distribution</a>
                   </li>
                   <li class="nav-item">
                       <a class="nav-link" href="{{url('master_user')}}">Manajemen User</a>
@@ -141,23 +144,20 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-  <script src="{{asset('assets/select2/js/select2.full.min.js')}}" charset="utf-8"></script>
-  <script src="{{asset('js/plugins-init/select2-init.js')}}" charset="utf-8"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js"></script>
+  {{-- <script src="{{asset('assets/select2/js/select2.full.min.js')}}" charset="utf-8"></script> --}}
+  {{-- <script src="{{asset('js/plugins-init/select2-init.js')}}" charset="utf-8"></script> --}}
   <script src="{{asset('js/validator.js')}}" charset="utf-8"></script>
     <script type="text/javascript">
         $(document).ready(function() {
             $('#example').DataTable();
         });
 
-        // In your Javascript (external .js resource or <script> tag)
-// $(document).ready(function() {
-//     $('.js-example-basic-single').select2();
-// });
-$(document).ready(function() {
-  $(".js-example-basic-single").select2({
-    dropdownParent: $("#modal-form")
-  });
-});
+      $(document).ready(function() {
+        $(".js-example-basic-single").select2({
+          dropdownParent: $("#modal-form")
+        });
+      });
     </script>
 
   @yield('js')

@@ -1,17 +1,16 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Sales;
+use App\Distribution;
 use App\Item;
-use App\DetailSales;
+use App\DetailDistribution;
 use App\Stock;
 use App\Owner;
+use App\Unit;
 use Auth;
-
 use Illuminate\Http\Request;
 
-class salesController extends Controller
+class StockDistributionController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -20,12 +19,11 @@ class salesController extends Controller
      */
     public function index()
     {
-      $id_owner = Auth::User()->owner_id;
-        $item = Item::all();
-        $owner = Owner::where('o_id',$id_owner)->get();
-        // $owner = Stock::join('m_owner','s_id_owner','=','o_id')->join('m_item','s_id_item','=','i_id')->get();
-        // dd($owner);
-        return view('sales.index',compact('item','owner'));
+        $id_owner = Auth::User()->owner_id;
+        $item = Stock::join('m_item','s_id_item','=','i_id')->where('s_id_owner',$id_owner)->get();
+        $owner = Owner::all();
+        $unit = Unit::all();
+        return view('distribution.index',compact('owner','item','unit'));
     }
 
     /**
@@ -35,7 +33,7 @@ class salesController extends Controller
      */
     public function create()
     {
-        //
+
     }
 
     /**
@@ -47,11 +45,9 @@ class salesController extends Controller
     public function store(Request $request)
     {
 
-      // dd($request->all());
-
-      $nom = Sales::max('id');
+      $nom = Distribution::max('id');
       $bulanRomawi = array("", "I","II","III", "IV", "V","VI","VII","VIII","IX","X", "XI","XII");
-      $AWAL = 'BRT';
+      $AWAL = 'DST';
       $no = 1;
       $no_nota='';
       // dd($nom);
@@ -63,46 +59,45 @@ class salesController extends Controller
        $no_nota = sprintf("%03s", $no). '/' . $AWAL .'/' . $bulanRomawi[date('n')] .'/' . date('Y');
     }
 
+    $id_owner_from = Auth::user()->owner_id;
 
-      $sales = new Sales;
-      $sales->date = date('Y-m-d');
-      $sales->nota = $no_nota;
-      $sales->total = array_sum($request->tot);
-      $sales->save();
+      $dist = new Distribution;
+      $dist->date = date('Y-m-d');
+      $dist->nota = $no_nota;
+      $dist->from = $id_owner_from;
+      $dist->destination = $request->o_id[0];
+      $dist->status = 's';
+      $dist->save();
 
       $input = $request->all();
       $last_id = array();
 
-
   for($i=0; $i<= count($input['jumlah']); $i++) {
-    array_push($last_id,$sales->id);
+    array_push($last_id,$dist->id);
 
 
     if(empty($input['jumlah'][$i]) || !is_numeric($input['jumlah'][$i])) continue;
 
 
     $data = [
-      'sales_id' => $last_id[$i],
+      'stock_distribution_id' => $last_id[$i],
       'detail_id' => $i,
       'item_id' => $input['id_barang'][$i],
-      'value' => $input['barang_harga'][$i],
       'qty' => $input['jumlah'][$i],
-      'total_net' => $input['tot'][$i]
+      'unit' => $input['satuan'][$i]
     ];
-     DetailSales::create($data);
 
+    DetailDistribution::create($data);
     }
-  // return var_dump($data);
-
-    }
+  }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Sales  $sales
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Sales $sales)
+    public function show($id)
     {
         //
     }
@@ -110,10 +105,10 @@ class salesController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Sales  $sales
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Sales $sales)
+    public function edit($id)
     {
         //
     }
@@ -122,10 +117,10 @@ class salesController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Sales  $sales
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Sales $sales)
+    public function update(Request $request, $id)
     {
         //
     }
@@ -133,40 +128,11 @@ class salesController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Sales  $sales
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Sales $sales)
+    public function destroy($id)
     {
         //
     }
-    public function get_data_barang($request)
-    {
-      $item = Stock::join('m_owner','s_id_owner','=','o_id')
-      ->join('m_item','s_id_item','=','i_id')
-      ->where('s_id_owner',$request)
-      ->get();
-
-      // $item = Item::find($id);
-      // dd($item);
-      // return response()->json(['item' => $item], 200);
-      // return json_encode($item);
-      return $item;
-    }
-
-    public function get_harga_barang($id)
-    {
-
-      $item = Item::where('i_id',$id)->value('i_price');
-      // dd($item);
-      // return response()->json(['item' => $item], 200);
-      return json_encode($item);
-      // return $item;
-    }
-
-
-
-
-
-
 }

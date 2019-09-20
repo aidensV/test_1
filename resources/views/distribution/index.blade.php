@@ -17,7 +17,7 @@
       <div class="box box-primary">
 
         <!-- /.box-header -->
-        <div class="box-body">
+        <div class="box-body" id="div_top">
 
           <form id="form-table" role="form" class="form_belanja"  method="post">
               {{ csrf_field() }} {{ method_field('POST') }}
@@ -37,8 +37,7 @@
                     <th>Nama Item</th>
                     <!-- <th>Satuan</th> -->
                     <th>Qty</th>
-                    <th>Harga</th>
-                    <th>Sub Total</th>
+                    <th>Satuan</th>
                     <th>Aksi</th>
                   </tr>
                 </thead>
@@ -51,7 +50,7 @@
                   </tr>
                   <tr class="footercount" style="display: none;">
                     <td  colspan="4" align="center" ></td>
-                    <td  align="right" class="total"></td>
+                    {{-- <td  align="right" class="total"></td> --}}
                     <td></td>
                   </tr>
                 </tfoot>
@@ -91,7 +90,7 @@
 </section>
 
 <!-- /.content -->
-@include('sales.create')
+@include('distribution.create')
 @endsection
 
 
@@ -127,22 +126,36 @@ function cekQty(qty){
   });
 }
 
+
 // save Data
 function saveToDatabase() {
 
   var form = $('#form-table');
   var data = form.serialize();
-
+  $.ajaxSetup ({
+          cache: false
+      });
 // var total = $('.form_barang input[name=total]').val();
   axios({
   method: 'post',
-  url: "{{route('sales.store')}}",
+  url: "{{route('distribution.store')}}",
   headers: {},
   data: data,
-});
+})
+.then(function (response) {
+    console.log(response);
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+  var ajax_load = "<img src='http://automobiles.honda.com/images/current-offers/small-loading.gif' alt='loading...' />";
+
+     // load() functions
+     var loadUrl = "http://fiddle.jshell.net/deborah/pkmvD/show/";
 
 location.reload(true);
 }
+
 var formBarang = $(".form_barang");
 
   var formBelanja = $(".form_belanja");
@@ -181,72 +194,54 @@ var formBarang = $(".form_barang");
 
       $('#o_id').select2({
         dropdownParent: $("#modal-form"),
-        placeholder: 'Pilih Nama Owner',
+        placeholder: 'Pilih Owner Tujuan',
         language: "id"
+      });
+      $('#u_id').select2({
+        dropdownParent: $("#modal-form"),
+        placeholder: 'Pilih Satuan Barang',
+        language: "id"
+      });
+
+      $(document).ready(function()
+      {
+          $('select[name="o_id"]').on('change', function() {
+              var provID = $(this).val();
+              if(provID) {
+                  $.ajax({
+                      url: 'get_data_barang/'+provID,
+                      type: "GET",
+                      dataType: "json",
+                      success:function(data) {
+                          $('select[name="id_barang"]').empty();
+                          $.each(data, function(key, value) {
+                            // console.log(value.s_id_owner);
+                              $('select[name="id_barang"]').append('<option value="'+ value.i_id +'">'+ value.i_name +'</option>');
+                          });
+                      }
+                  });
+              }else{
+                  $('select[name="id_barang"]').empty();
+              }
+          });
+      });
+
+
+      //
+      $('#id_barang').on('change', function(e){
+          var state_id = e.target.value;
+          // console.log(state_id);
+          $.get('{{ url('get_harga_barang') }}'+ '/' + state_id, function(data) {
+              $('#barang_harga').empty();
+              // $.each(data, function(index,subCatObj){
+              //     $('#barang_harga').val(''+subCatObj.log_stok_saldo_harga+'');
+              // });
+                  $('#barang_harga').val(''+data+'');
+          });
       });
     });
 
     // Select2 js Chained
-    $(document).ready(function()
-    {
-        $('select[name="o_id"]').on('change', function() {
-            var provID = $(this).val();
-            if(provID) {
-                $.ajax({
-                    url: 'get_data_barang/'+provID,
-                    type: "GET",
-                    dataType: "json",
-                    success:function(data) {
-                        $('select[name="id_barang"]').empty();
-                        $.each(data, function(key, value) {
-                          // console.log(value.s_id_owner);
-                            $('select[name="id_barang"]').append('<option value="'+ value.i_id +'">'+ value.i_name +'</option>');
-                        });
-                    }
-                });
-            }else{
-                $('select[name="id_barang"]').empty();
-            }
-        });
-    });
-
-
-    //
-    $('#id_barang').on('change', function(e){
-        var state_id = e.target.value;
-        // console.log(state_id);
-        $.get('{{ url('get_harga_barang') }}'+ '/' + state_id, function(data) {
-            $('#barang_harga').empty();
-            // $.each(data, function(index,subCatObj){
-            //     $('#barang_harga').val(''+subCatObj.log_stok_saldo_harga+'');
-            // });
-                $('#barang_harga').val(''+data+'');
-        });
-    });
-
-    // $(document).on("change", ".form_barang select[name=id_barang]", function(){
-    //   var idbarang = $(this).val();
-    //   $.ajax({
-    //     url : "",
-    //     type : "post",
-    //     data : { id_barang : idbarang },
-    //     dataType : "json",
-    //     success : function (result) {
-    //       console.log(result);
-    //       $(".form_barang select[name=barang_harga]").html("");
-    //       // create the option and append to Select2
-    //       $.each(result, function(id, val){
-    //         var option = $('<option/>');
-    //         option.attr({
-    //           'value': val.id,
-    //           'data-beli' : val.harga_beli,
-    //           'data-jual' : val.harga,
-    //         }).text( "Harga Beli : "+accounting.formatMoney(val.harga_beli)+" - Harga Jual : "+accounting.formatMoney(val.harga) );
-    //         $(".form_barang select[name=barang_harga]").append(option).trigger('change');
-    //       })
-    //     }
-    //   });
-    // });
 
     $(document).on("click",".btn_tambah",function(e){
       $('.form_barang')[0].reset();
@@ -285,17 +280,10 @@ var formBarang = $(".form_barang");
       var crud = $('.form_barang input[name=crud]').val();
       var id_barang = $('.form_barang select[name=id_barang]').val();
       var nama_barang = $('.form_barang select[name=id_barang] option:selected').text();
-      // var id_satuan = $('.form_barang select[name=id_satuan]').val();
-      // var nama_satuan = $('.form_barang select[name=id_satuan] option:selected').text();
-      // var harga_satuan = $('.form_barang input[name=harga_satuan]').val();
-      // var barang_harga = $('.form_barang select[name=barang_harga] > option:selected');
-      var diskon = $('.form_barang input[name=diskon]').val();
-      var barang_harga = $('.form_barang input[name=barang_harga]').val();
       var jumlah = $('.form_barang input[name=jumlah]').val();
-      var total = $('.form_barang input[name=total]').val();
-      var id_owner = $('.form_barang select[name=o_id]').val();
-
-
+      var satuan = $('.form_barang select[name=id_barang]').val();
+      var id_owner_to = $('.form_barang select[name=o_id]').val();
+      var id_owner_from = "{{Auth::user()->owner_id}}";
       // kurangi stok
       axios({
       method: 'post',
@@ -303,30 +291,40 @@ var formBarang = $(".form_barang");
       data: {
         id_barang: id_barang,
         qty: jumlah,
-        id_owner: id_owner
+        id_owner: id_owner_from
         }
       });
 
-      var attr=" nama_barang='"+nama_barang+"' id_barang='"+id_barang+"' total='"+total+"' jumlah='"+jumlah+"'  barang_harga='"+barang_harga+"' ";
+      // Tambahi stok
+      axios({
+      method: 'post',
+      url: 'tambahi_stock',
+      data: {
+        id_barang: id_barang,
+        qty: jumlah,
+        id_owner: id_owner_to
+        }
+      });
+
+      var attr=" nama_barang='"+nama_barang+"' id_barang='"+id_barang+"' satuan='"+satuan+"' jumlah='"+jumlah+"'  o_id='"+id_owner_to+"' ";
       var row=""+
       // "<td>"+nama_barang+"<input type='hidden' readonly='' value='"+id_barang+"' name='id_barang[]' ><input type='hidden' readonly='' value='"+barang_harga.val()+"' name='barang_harga[]' ></td>"+
-      "<td>"+nama_barang+"<input type='hidden' readonly='' value='"+id_barang+"' name='id_barang[]' ><input type='hidden' readonly='' value='"+barang_harga+"' name='barang_harga[]' ><input type='hidden' readonly='' value='"+total+"' name='tot[]' ></td>"+
+      "<td>"+nama_barang+"<input type='hidden' readonly='' value='"+id_barang+"' name='id_barang[]' ><input type='hidden' readonly='' value='"+satuan+"' name='satuan[]' > <input type='hidden' readonly='' value='"+id_owner_to+"' name='o_id[]' ></td>"+
       // "<td>"+nama_satuan+"<input type='hidden' readonly='' value='"+id_satuan+"' name='id_satuan[]' ></td>"+
       // "<td class='text-right'><input type='' readonly value='"+50+"' class='text-right' name='harga_satuan[]' style='background:none;border:0;'></td>"+
       // "<td class='text-right'><input type='' readonly value='"+accounting.formatMoney(barang_harga.data('beli'))+"' class='text-right' name='harga_satuan[]' style='background:none;border:0;'></td>"+
       "<td class='text-right'><input type='' readonly value='"+accounting.formatNumber(jumlah)+"' class='text-right' name='jumlah[]' style='background:none;border:0;'></td>"+
 
-      "<td class='text-right'><input type='' readonly value='"+accounting.formatMoney(barang_harga)+"' class='text-right' name='' style='background:none;border:0;'></td>"+
+      "<td class='text-right'><input type='' readonly value='"+satuan+"' class='text-right' name='' style='background:none;border:0;'></td>"+
       // "<td class='text-right'><input type='hidden' readonly value='"+parseFloat(accounting.unformat(barang_harga))+"' class='text-right' name='harga_satuan[]' style='background:none;border:0;'></td>"+
       // "<td class='text-right'><input type='hidden' readonly value='"+parseFloat(accounting.unformat(diskon))+"' class='text-right' name='diskon[]' style='background:none;border:0;'></td>"+
       // "<td class='text-right'><input type='' readonly value='"+6+"' class='text-right' name='jumlah[]' style='background:none;border:0;'></td>"+
       // "<td class='text-right'><input type='' readonly value='"+60+"' class='text-right' name='tot[]' style='background:none;border:0;'></td>"+
-      "<td class='text-right'><input type='' readonly value='"+accounting.formatMoney(total)+"' class='text-right'  style='background:none;border:0;'></td>"+
       // "<td class='text-right'><input type='' readonly value='88' class='text-right' name='detail_id' id='detail_id' style='background:none;border:0;'></td>"+
       "<td><a class='btn btn-danger btn-xs btn_del' data-id='2' style='color:white'>Hapus</a></td>";
 
     if(crud=="tambah"){
-      $('table.table-barang tbody').append("<tr id='"+ id_barang +" ' qty='"+ jumlah +" ' id_owner='"+ id_owner +"'>"+row+"</tr>");
+      $('table.table-barang tbody').append("<tr id='"+ id_barang +" 'to='"+id_owner_to+" 'from='"+id_owner_from+" ' qty='"+ jumlah +"'>"+row+"</tr>");
 
      }else if(crud=="edit"){
       $(rowtempx).html(row);
@@ -363,22 +361,35 @@ var formBarang = $(".form_barang");
     });
 
     $(document).on("click"," .btn_del",function(e){
-      var id_barang_del = $(this).parents('tr:first').attr('id');
-      var qty_del = $(this).parents('tr:first').attr('qty');
-      var id_owner = $(this).parents('tr:first').attr('id_owner');
-      console.log(id_owner);
+      var id_barang = $(this).parents('tr:first').attr('id');
+      var jumlah = $(this).parents('tr:first').attr('qty');
+      var id_owner_to = $(this).parents('tr:first').attr('to');
+      var id_owner_from = $(this).parents('tr:first').attr('from');
+      // Kurangi Stock
+      axios({
+      method: 'post',
+      url: 'kurangi_stock',
+      data: {
+        id_barang: id_barang,
+        qty: jumlah,
+        id_owner: id_owner_to
+        }
+      });
+
+      // Tambahi stok
       axios({
       method: 'post',
       url: 'tambahi_stock',
       data: {
-        id_barang: id_barang_del,
-        qty: qty_del,
-        id_owner:id_owner
+        id_barang: id_barang,
+        qty: jumlah,
+        id_owner: id_owner_from
         }
       });
-      // $(this).parents('tr').remove();
 
-      // reload_table();
+      $(this).parents('tr').remove();
+
+      reload_table();
     });
 
     function reload_table(){
