@@ -20,9 +20,11 @@ Route::get('/home', function () {
     return view('menu');
 });
 Route::get('get_harga_barang/{id}','salesController@get_harga_barang');
+Route::get('get_unit_barang/{id}','salesController@get_unit_barang');
 Route::get('get_data_barang/{id}','salesController@get_data_barang');
 Route::post('kurangi_stock','StockController@kurangi_stock');
 Route::post('tambahi_stock','StockController@tambahi_stock');
+Route::get('cek_item/{barang}/{unit}','salesController@cek_item');
 // Route::get('kurangi_stock','salesController@kurangi_stock');
 // Route::post('get_data_barang','salesController@get_data_barang');
 Route::get('cek_qty/{qty}/{owner}','StockController@cek_qty');

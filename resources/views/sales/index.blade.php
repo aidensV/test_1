@@ -104,18 +104,29 @@
 {{-- <script src="{{asset('js/selectChain.js')}}" charset="utf-8"></script> --}}
 
 <script type="text/javascript">
+function cek_barang() {
+  u_id=$('.form_barang select[name=u_id]').val();
+  b_id=$('.form_barang select[name=id_barang]').val();
+   return axios.get('{{ url('cek_item') }}'+ '/' + b_id + '/' + u_id);
+
+}
 
 // Cek Qty Ajax
 function cekQty(qty){
   var id_item = $("#id_barang").val();
   let id_owner = "{{Auth::user()->owner_id}}";
+
+cek_barang().then(function (data) {
   axios({
   method: 'get',
   url: 'cek_qty/'+id_item+'/'+id_owner,
   responseType: 'stream'
-})
+  })
   .then(function (response) {
-    if (qty <= response.data) {
+    let val_unit = data.data;
+    var qty_total = qty * val_unit;
+
+    if (qty_total <= (response.data)) {
       document.getElementById("btn_simpan").disabled = false;
       $("#message_qty").html("");
     }else{
@@ -125,6 +136,8 @@ function cekQty(qty){
     }
     // response.data.pipe(fs.createWriteStream('ada_lovelace.jpg'))
   });
+});
+
 }
 
 // save Data
@@ -210,7 +223,28 @@ var formBarang = $(".form_barang");
         });
     });
 
-
+    $(document).ready(function(){
+        $('select[name="id_barang"]').on('change', function() {
+            var provID = $(this).val();
+            if(provID) {
+                $.ajax({
+                    url: 'get_unit_barang/'+provID,
+                    type: "GET",
+                    dataType: "json",
+                    success:function(data) {
+                      // console.log(data);
+                        $('select[name="u_id"]').empty();
+                        $.each(data, function(key, value) {
+                          // console.log(value.s_id_owner);
+                            $('select[name="u_id"]').append('<option value="'+ value.u_id +'">'+ value.u_name +'</option>');
+                        });
+                    }
+                });
+            }else{
+                $('select[name="id_barang"]').empty();
+            }
+        });
+    });
     //
     $('#id_barang').on('change', function(e){
         var state_id = e.target.value;
@@ -294,23 +328,28 @@ var formBarang = $(".form_barang");
       var jumlah = $('.form_barang input[name=jumlah]').val();
       var total = $('.form_barang input[name=total]').val();
       var id_owner = $('.form_barang select[name=o_id]').val();
+      var unit_id = $('.form_barang select[name=u_id]').val();
 
 
       // kurangi stok
-      axios({
-      method: 'post',
-      url: 'kurangi_stock',
-      data: {
-        id_barang: id_barang,
-        qty: jumlah,
-        id_owner: id_owner
-        }
+      cek_barang().then(function(response){
+        let qty = jumlah * response.data;
+        axios({
+        method: 'post',
+        url: 'kurangi_stock',
+        data: {
+          id_barang: id_barang,
+          qty: qty,
+          id_owner: id_owner
+          }
+        });
       });
+
 
       var attr=" nama_barang='"+nama_barang+"' id_barang='"+id_barang+"' total='"+total+"' jumlah='"+jumlah+"'  barang_harga='"+barang_harga+"' ";
       var row=""+
       // "<td>"+nama_barang+"<input type='hidden' readonly='' value='"+id_barang+"' name='id_barang[]' ><input type='hidden' readonly='' value='"+barang_harga.val()+"' name='barang_harga[]' ></td>"+
-      "<td>"+nama_barang+"<input type='hidden' readonly='' value='"+id_barang+"' name='id_barang[]' ><input type='hidden' readonly='' value='"+barang_harga+"' name='barang_harga[]' ><input type='hidden' readonly='' value='"+total+"' name='tot[]' ></td>"+
+      "<td>"+nama_barang+"<input type='hidden' readonly='' value='"+id_barang+"' name='id_barang[]' ><input type='hidden' readonly='' value='"+barang_harga+"' name='barang_harga[]' ><input type='hidden' readonly='' value='"+total+"' name='tot[]' ><input type='hidden' readonly='' value='"+unit_id+"' name='unit_id[]' ></td>"+
       // "<td>"+nama_satuan+"<input type='hidden' readonly='' value='"+id_satuan+"' name='id_satuan[]' ></td>"+
       // "<td class='text-right'><input type='' readonly value='"+50+"' class='text-right' name='harga_satuan[]' style='background:none;border:0;'></td>"+
       // "<td class='text-right'><input type='' readonly value='"+accounting.formatMoney(barang_harga.data('beli'))+"' class='text-right' name='harga_satuan[]' style='background:none;border:0;'></td>"+
@@ -366,19 +405,27 @@ var formBarang = $(".form_barang");
       var id_barang_del = $(this).parents('tr:first').attr('id');
       var qty_del = $(this).parents('tr:first').attr('qty');
       var id_owner = $(this).parents('tr:first').attr('id_owner');
-      console.log(id_owner);
-      axios({
-      method: 'post',
-      url: 'tambahi_stock',
-      data: {
-        id_barang: id_barang_del,
-        qty: qty_del,
-        id_owner:id_owner
-        }
-      });
-      // $(this).parents('tr').remove();
+      // console.log(id_owner);
 
-      // reload_table();
+      axios({
+        method: 'get',
+        url: '{{ url('cek_item') }}'+ '/' + b_id + '/' + u_id,
+        responseType: 'stream'
+      }).then(function (response) {
+          let qty = qty_del * response.data;
+          axios({
+          method: 'post',
+          url: 'tambahi_stock',
+          data: {
+            id_barang: id_barang_del,
+            qty: qty,
+            id_owner:id_owner
+            }
+          });
+
+        });
+        $(this).parents('tr').remove();
+        reload_table();
     });
 
     function reload_table(){
@@ -446,8 +493,15 @@ var formBarang = $(".form_barang");
     harga_satuan=parseInt($(".form_barang input[name=barang_harga]").val());
     jumlah=parseInt($(".form_barang input[name=jumlah]").val());
     diskon=parseInt($(".form_barang input[name=diskon]").val());
+    u_id=$('.form_barang select[name=u_id]').val();
+    b_id=$('.form_barang select[name=id_barang]').val();
 
-    $(".form_barang input[name=total]").val(jumlah * harga_satuan).keyup();
+    cek_barang().then(function (data){
+      let val_unit = data.data;
+      $(".form_barang input[name=total]").val((jumlah * val_unit) * harga_satuan).keyup();
+    });
+
+    // console.log(b_id);
   }
 
 

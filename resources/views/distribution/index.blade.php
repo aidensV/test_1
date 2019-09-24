@@ -104,26 +104,38 @@
 
 <script type="text/javascript">
 
+function cek_barang() {
+  u_id=$('.form_barang select[name=u_id]').val();
+  b_id=$('.form_barang select[name=id_barang]').val();
+   return axios.get('{{ url('cek_item') }}'+ '/' + b_id + '/' + u_id);
+
+}
+
 // Cek Qty Ajax
 function cekQty(qty){
   var id_item = $("#id_barang").val();
   let id_owner = "{{Auth::user()->owner_id}}";
+
+cek_barang().then(function (data) {
   axios({
   method: 'get',
   url: 'cek_qty/'+id_item+'/'+id_owner,
   responseType: 'stream'
-})
+  })
   .then(function (response) {
-    if (qty <= response.data) {
+    let val_unit = data.data;
+    var qty_total = qty * val_unit;
+    // console.log(qty_total);
+    if (qty_total <= (response.data)) {
       document.getElementById("btn_simpan").disabled = false;
       $("#message_qty").html("");
     }else{
       $("#message_qty").html("Stok Tersedia : <b style='color:black'>"+response.data+"</b>");
       document.getElementById("btn_simpan").disabled = true;
-      // $("#btn_simpan").html("Stok Tersedia : <b style='color:black'>"+response.data+"</b>");
     }
-    // response.data.pipe(fs.createWriteStream('ada_lovelace.jpg'))
   });
+});
+
 }
 
 
@@ -148,10 +160,10 @@ function saveToDatabase() {
   .catch(function (error) {
     console.log(error);
   });
-  var ajax_load = "<img src='http://automobiles.honda.com/images/current-offers/small-loading.gif' alt='loading...' />";
-
-     // load() functions
-     var loadUrl = "http://fiddle.jshell.net/deborah/pkmvD/show/";
+  // var ajax_load = "<img src='http://automobiles.honda.com/images/current-offers/small-loading.gif' alt='loading...' />";
+  //
+  //    // load() functions
+  //    var loadUrl = "http://fiddle.jshell.net/deborah/pkmvD/show/";
 
 location.reload(true);
 }
@@ -203,8 +215,7 @@ var formBarang = $(".form_barang");
         language: "id"
       });
 
-      $(document).ready(function()
-      {
+      $(document).ready(function(){
           $('select[name="o_id"]').on('change', function() {
               var provID = $(this).val();
               if(provID) {
@@ -213,9 +224,10 @@ var formBarang = $(".form_barang");
                       type: "GET",
                       dataType: "json",
                       success:function(data) {
+                        // console.log(data);
                           $('select[name="id_barang"]').empty();
                           $.each(data, function(key, value) {
-                            // console.log(value.s_id_owner);
+                            console.log(value.s_id_owner);
                               $('select[name="id_barang"]').append('<option value="'+ value.i_id +'">'+ value.i_name +'</option>');
                           });
                       }
@@ -226,11 +238,30 @@ var formBarang = $(".form_barang");
           });
       });
 
+      $(document).ready(function(){
+          $('select[name="id_barang"]').on('change', function() {
+              var provID = $(this).val();
+              if(provID) {
+                  $.ajax({
+                      url: 'get_unit_barang/'+provID,
+                      type: "GET",
+                      dataType: "json",
+                      success:function(data) {
+                        // console.log(data);
+                          $('select[name="u_id"]').empty();
+                          $.each(data, function(key, value) {
+                            // console.log(value.s_id_owner);
+                              $('select[name="u_id"]').append('<option value="'+ value.u_id +'">'+ value.u_name +'</option>');
+                          });
+                      }
+                  });
+              }else{
+                  $('select[name="id_barang"]').empty();
+              }
+          });
+      });
 
-      //
-      $('#id_barang').on('change', function(e){
-          var state_id = e.target.value;
-          // console.log(state_id);
+      //     // Harga Barang
           $.get('{{ url('get_harga_barang') }}'+ '/' + state_id, function(data) {
               $('#barang_harga').empty();
               // $.each(data, function(index,subCatObj){
@@ -280,30 +311,37 @@ var formBarang = $(".form_barang");
       var crud = $('.form_barang input[name=crud]').val();
       var id_barang = $('.form_barang select[name=id_barang]').val();
       var nama_barang = $('.form_barang select[name=id_barang] option:selected').text();
+      var nama_satuan = $('.form_barang select[name=u_id] option:selected').text();
       var jumlah = $('.form_barang input[name=jumlah]').val();
-      var satuan = $('.form_barang select[name=id_barang]').val();
+      var satuan = $('.form_barang select[name=u_id]').val();
       var id_owner_to = $('.form_barang select[name=o_id]').val();
       var id_owner_from = "{{Auth::user()->owner_id}}";
       // kurangi stok
-      axios({
-      method: 'post',
-      url: 'kurangi_stock',
-      data: {
-        id_barang: id_barang,
-        qty: jumlah,
-        id_owner: id_owner_from
-        }
+      cek_barang().then(function(response){
+        let qty = jumlah * response.data;
+        axios({
+        method: 'post',
+        url: 'kurangi_stock',
+        data: {
+          id_barang: id_barang,
+          qty: qty,
+          id_owner: id_owner_from
+          }
+        });
       });
 
       // Tambahi stok
-      axios({
-      method: 'post',
-      url: 'tambahi_stock',
-      data: {
-        id_barang: id_barang,
-        qty: jumlah,
-        id_owner: id_owner_to
-        }
+      cek_barang().then(function(response){
+        let qty = jumlah * response.data;
+        axios({
+        method: 'post',
+        url: 'tambahi_stock',
+        data: {
+          id_barang: id_barang,
+          qty: qty,
+          id_owner: id_owner_to
+          }
+        });
       });
 
       var attr=" nama_barang='"+nama_barang+"' id_barang='"+id_barang+"' satuan='"+satuan+"' jumlah='"+jumlah+"'  o_id='"+id_owner_to+"' ";
@@ -315,7 +353,7 @@ var formBarang = $(".form_barang");
       // "<td class='text-right'><input type='' readonly value='"+accounting.formatMoney(barang_harga.data('beli'))+"' class='text-right' name='harga_satuan[]' style='background:none;border:0;'></td>"+
       "<td class='text-right'><input type='' readonly value='"+accounting.formatNumber(jumlah)+"' class='text-right' name='jumlah[]' style='background:none;border:0;'></td>"+
 
-      "<td class='text-right'><input type='' readonly value='"+satuan+"' class='text-right' name='' style='background:none;border:0;'></td>"+
+      "<td class='text-right'><input type='' readonly value='"+nama_satuan+"' class='text-right' name='' style='background:none;border:0;'></td>"+
       // "<td class='text-right'><input type='hidden' readonly value='"+parseFloat(accounting.unformat(barang_harga))+"' class='text-right' name='harga_satuan[]' style='background:none;border:0;'></td>"+
       // "<td class='text-right'><input type='hidden' readonly value='"+parseFloat(accounting.unformat(diskon))+"' class='text-right' name='diskon[]' style='background:none;border:0;'></td>"+
       // "<td class='text-right'><input type='' readonly value='"+6+"' class='text-right' name='jumlah[]' style='background:none;border:0;'></td>"+
@@ -361,31 +399,47 @@ var formBarang = $(".form_barang");
     });
 
     $(document).on("click"," .btn_del",function(e){
-      var id_barang = $(this).parents('tr:first').attr('id');
-      var jumlah = $(this).parents('tr:first').attr('qty');
+      var id_barang_del = $(this).parents('tr:first').attr('id');
+      var qty_del = $(this).parents('tr:first').attr('qty');
       var id_owner_to = $(this).parents('tr:first').attr('to');
       var id_owner_from = $(this).parents('tr:first').attr('from');
       // Kurangi Stock
       axios({
-      method: 'post',
-      url: 'kurangi_stock',
-      data: {
-        id_barang: id_barang,
-        qty: jumlah,
-        id_owner: id_owner_to
-        }
-      });
+        method: 'get',
+        url: '{{ url('cek_item') }}'+ '/' + b_id + '/' + u_id,
+        responseType: 'stream'
+      }).then(function (response) {
+          let qty = qty_del * response.data;
+          axios({
+          method: 'post',
+          url: 'kurangi_stock',
+          data: {
+            id_barang: id_barang_del,
+            qty: qty,
+            id_owner:id_owner_to
+            }
+          });
+
+        });
 
       // Tambahi stok
       axios({
-      method: 'post',
-      url: 'tambahi_stock',
-      data: {
-        id_barang: id_barang,
-        qty: jumlah,
-        id_owner: id_owner_from
-        }
-      });
+        method: 'get',
+        url: '{{ url('cek_item') }}'+ '/' + b_id + '/' + u_id,
+        responseType: 'stream'
+      }).then(function (response) {
+          let qty = qty_del * response.data;
+          axios({
+          method: 'post',
+          url: 'tambahi_stock',
+          data: {
+            id_barang: id_barang_del,
+            qty: qty,
+            id_owner:id_owner_from
+            }
+          });
+
+        });
 
       $(this).parents('tr').remove();
 
@@ -457,8 +511,13 @@ var formBarang = $(".form_barang");
     harga_satuan=parseInt($(".form_barang input[name=barang_harga]").val());
     jumlah=parseInt($(".form_barang input[name=jumlah]").val());
     diskon=parseInt($(".form_barang input[name=diskon]").val());
+    u_id=$('.form_barang select[name=u_id]').val();
+    b_id=$('.form_barang select[name=id_barang]').val();
 
-    $(".form_barang input[name=total]").val(jumlah * harga_satuan).keyup();
+    cek_barang().then(function (data){
+      let val_unit = data.data;
+      $(".form_barang input[name=total]").val((jumlah * val_unit) * harga_satuan).keyup();
+    });
   }
 
 

@@ -7,6 +7,7 @@ use App\Item;
 use App\DetailSales;
 use App\Stock;
 use App\Owner;
+use App\Unit;
 use Auth;
 
 use Illuminate\Http\Request;
@@ -22,10 +23,11 @@ class salesController extends Controller
     {
       $id_owner = Auth::User()->owner_id;
         $item = Item::all();
+        $unit = Unit::all();
         $owner = Owner::where('o_id',$id_owner)->get();
         // $owner = Stock::join('m_owner','s_id_owner','=','o_id')->join('m_item','s_id_item','=','i_id')->get();
         // dd($owner);
-        return view('sales.index',compact('item','owner'));
+        return view('sales.index',compact('item','owner','unit'));
     }
 
     /**
@@ -87,7 +89,8 @@ class salesController extends Controller
       'item_id' => $input['id_barang'][$i],
       'value' => $input['barang_harga'][$i],
       'qty' => $input['jumlah'][$i],
-      'total_net' => $input['tot'][$i]
+      'total_net' => $input['tot'][$i],
+      'unit_id' => $input['unit_id'][$i]
     ];
      DetailSales::create($data);
 
@@ -154,14 +157,74 @@ class salesController extends Controller
       return $item;
     }
 
-    public function get_harga_barang($id)
+    public function get_unit_barang($id)
     {
 
-      $item = Item::where('i_id',$id)->value('i_price');
-      // dd($item);
-      // return response()->json(['item' => $item], 200);
-      return json_encode($item);
+
+      $item = Item::find($id);
+      $unit_1 = $item->i_unit1;
+      $unit_2 = $item->i_unit2;
+      $unit_3 = $item->i_unit3;
+      $price = $item->price;
+      $units = [$unit_1,$unit_2,$unit_3];
+
+      $unit = Unit::whereIn('u_id',$units)->get();
+
+      return json_encode($unit);
       // return $item;
+    }
+
+    public function get_harga_barang($id)
+    {
+      $item = Item::find($id);
+      $price = $item->i_price;
+      return json_encode($price);
+
+    }
+
+    // public function cek_item(Request $request)
+    // {
+    //   // dd($request['id_barang']);
+    //
+    //   $item = Item::where('i_id',$request['id_barang'])->get();
+    //   foreach ($item as $value) {
+    //     // dd($value->toArray());
+    //     foreach ($value->toArray() as $key => $value2) {
+    //       if ($value2 == $request['u_id']) {
+    //         if ($key == 'i_unit3') {
+    //             return $value['i_unitcompare3'];
+    //         }elseif ($key == 'i_unit2') {
+    //             return $value['i_unitcompare2'];
+    //         }elseif ($key == 'i_unit1') {
+    //           return $value['i_unitcompare1'];
+    //         }else {
+    //           return 'no unit';
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
+    public function cek_item($id_barang, $id_unit)
+    {
+      // dd($request['id_barang']);
+
+      $item = Item::where('i_id',$id_barang)->get();
+      foreach ($item as $value) {
+        // dd($value->toArray());
+        foreach ($value->toArray() as $key => $value2) {
+          if ($value2 == $id_unit) {
+            if ($key == 'i_unit3') {
+                return $value['i_unitcompare3'];
+            }elseif ($key == 'i_unit2') {
+                return $value['i_unitcompare2'];
+            }elseif ($key == 'i_unit1') {
+              return $value['i_unitcompare1'];
+            }else {
+              return 'no unit';
+            }
+          }
+        }
+      }
     }
 
 

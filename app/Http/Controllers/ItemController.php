@@ -17,8 +17,8 @@ class ItemController extends Controller
     public function index()
     {
 
-
-        $item = Item::join('m_unit','i_id_unit','=','u_id')->get();
+      
+        $item = Item::join('m_unit','i_unit1','=','u_id')->get();
         // dd($item);
         return view('data_item.index',compact('item'))->with('no',1);
     }
@@ -45,7 +45,12 @@ class ItemController extends Controller
     {
       $item = new Item;
       $item->i_name = $request['i_name'] ;
-      $item->i_id_unit = $request['i_id_unit'] ;
+      $item->i_unit1 = $request['i_unit1'] ;
+      $item->i_unit2 = $request['i_unit2'] ;
+      $item->i_unit3 = $request['i_unit3'] ;
+      $item->i_unitcompare1 = $request['i_unitcompare_1'] ;
+      $item->i_unitcompare2 = $request['i_unitcompare_2'] ;
+      $item->i_unitcompare3 = $request['i_unitcompare_3'] ;
       $item->i_price = $request['i_price'] ;
       $item->save();
       // dd($item);
@@ -88,7 +93,12 @@ class ItemController extends Controller
     {
       $item = Item::find($id);
       $item->i_name = $request['i_name'] ;
-      $item->i_id_unit = $request['i_id_unit'] ;
+      $item->i_unit1 = $request['i_unit1'] ;
+      $item->i_unit2 = $request['i_unit2'] ;
+      $item->i_unit3 = $request['i_unit3'] ;
+      $item->i_unitcompare1 = $request['i_unitcompare_1'] ;
+      $item->i_unitcompare2 = $request['i_unitcompare_2'] ;
+      $item->i_unitcompare3 = $request['i_unitcompare_3'] ;
       $item->i_price = $request['i_price'] ;
       $item->update();
       // dd($item);
