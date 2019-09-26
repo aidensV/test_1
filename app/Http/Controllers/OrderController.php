@@ -55,12 +55,11 @@ class OrderController extends Controller
       // dd($nom);
 
       if($nom) {
-        $no_noto = sprintf("%03s", abs($nom + 1)). '/' . $AWAL .'/' . $bulanRomawi[date('n')] .'/' . date('Y');
+        $no_nota = sprintf("%03s", abs($nom + 1)). '/' . $AWAL .'/' . $bulanRomawi[date('n')] .'/' . date('Y');
     }
     else {
        $no_nota = sprintf("%03s", $no). '/' . $AWAL .'/' . $bulanRomawi[date('n')] .'/' . date('Y');
     }
-
     $id_owner_from = Auth::user()->owner_id;
       $dist = new Distribution;
       $dist->date = date('Y-m-d');
@@ -153,7 +152,15 @@ class OrderController extends Controller
      */
     public function destroy($id)
     {
-        //
+      $dist_detail_id = DetailDistribution::join('d_stock_distribution','stock_distribution_id','=','id')->where('stock_distribution_id',$id)->get();
+      // dd($dist_detail_id);
+      foreach ($dist_detail_id as $key => $value) {
+      $dist_detail = DetailDistribution::where('stock_distribution_id',$value->stock_distribution_id)->where('detail_id',$value->detail_id)->first();
+      $dist_detail->delete();
+      }
+        $dist = Distribution::find($id);
+        $dist->delete();
+        return back();
     }
 
     public function update_qty(Request $request)

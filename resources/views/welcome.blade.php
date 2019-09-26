@@ -97,7 +97,10 @@
                       <a class="nav-link" href="{{url('sales')}}">Sales</a>
                   </li>
                   <li class="nav-item">
-                      <a class="nav-link" href="{{url('distribution')}}">Distribution</a>
+                      <a class="nav-link" href="{{url('distribution/create')}}">Distribution</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="{{url('distribution')}}">List Distribution</a>
                   </li>
                   <li class="nav-item">
                       <a class="nav-link" href="{{url('order/create')}}">Order</a>

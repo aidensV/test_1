@@ -137,7 +137,7 @@ function saveToDatabase() {
     console.log(error);
   });
 
-location.reload(true);
+// location.reload(true);
 }
 
 var formBarang = $(".form_barang");
