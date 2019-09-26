@@ -168,4 +168,6 @@ class StockController extends Controller
 
 
     }
+
+  
 }

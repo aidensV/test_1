@@ -90,7 +90,7 @@
 </section>
 
 <!-- /.content -->
-@include('distribution.create')
+@include('order.form')
 @endsection
 
 
@@ -112,31 +112,7 @@ function cek_barang() {
 }
 
 // Cek Qty Ajax
-function cekQty(qty){
-  var id_item = $("#id_barang").val();
-  let id_owner = "{{Auth::user()->owner_id}}";
 
-cek_barang().then(function (data) {
-  axios({
-  method: 'get',
-  url: 'cek_qty/'+id_item+'/'+id_owner,
-  responseType: 'stream'
-  })
-  .then(function (response) {
-    let val_unit = data.data;
-    var qty_total = qty * val_unit;
-    // console.log(qty_total);
-    if (qty_total <= (response.data)) {
-      document.getElementById("btn_simpan").disabled = false;
-      $("#message_qty").html("");
-    }else{
-      $("#message_qty").html("Stok Tersedia : <b style='color:black'>"+response.data+"</b>");
-      document.getElementById("btn_simpan").disabled = true;
-    }
-  });
-});
-
-}
 
 
 // save Data
@@ -150,7 +126,7 @@ function saveToDatabase() {
 // var total = $('.form_barang input[name=total]').val();
   axios({
   method: 'post',
-  url: "{{route('distribution.store')}}",
+  url: "{{route('order.store')}}",
   headers: {},
   data: data,
 })
@@ -160,10 +136,6 @@ function saveToDatabase() {
   .catch(function (error) {
     console.log(error);
   });
-  // var ajax_load = "<img src='http://automobiles.honda.com/images/current-offers/small-loading.gif' alt='loading...' />";
-  //
-  //    // load() functions
-  //    var loadUrl = "http://fiddle.jshell.net/deborah/pkmvD/show/";
 
 location.reload(true);
 }
@@ -214,14 +186,14 @@ var formBarang = $(".form_barang");
         placeholder: 'Pilih Satuan Barang',
         language: "id"
       });
-      });
 
       $(document).ready(function(){
           $('select[name="o_id"]').on('change', function() {
               var provID = $(this).val();
               if(provID) {
                   $.ajax({
-                      url: 'get_data_barang/'+provID,
+                      url: "{{url('get_data_barang')}}"+'/'+provID,
+                      // url: 'get_data_barang/'+provID,
                       type: "GET",
                       dataType: "json",
                       success:function(data) {
@@ -244,7 +216,7 @@ var formBarang = $(".form_barang");
               var provID = $(this).val();
               if(provID) {
                   $.ajax({
-                      url: 'get_unit_barang/'+provID,
+                      url: "{{url('get_unit_barang')}}"+'/'+provID,
                       type: "GET",
                       dataType: "json",
                       success:function(data) {
@@ -257,23 +229,13 @@ var formBarang = $(".form_barang");
                       }
                   });
               }else{
-                  $('select[name="u_id"]').empty();
+                  $('select[name="id_barang"]').empty();
               }
           });
       });
 
-      //     // Harga Barang
-      $('#id_barang').on('change', function(e){
-          var state_id = e.target.value;
-          // console.log(state_id);
-          $.get('{{ url('get_harga_barang') }}'+ '/' + state_id, function(data) {
-              $('#barang_harga').empty();
-              // $.each(data, function(index,subCatObj){
-              //     $('#barang_harga').val(''+subCatObj.log_stok_saldo_harga+'');
-              // });
-                  $('#barang_harga').val(''+data+'');
-          });
-      });
+
+    });
 
     // Select2 js Chained
 
@@ -319,33 +281,6 @@ var formBarang = $(".form_barang");
       var satuan = $('.form_barang select[name=u_id]').val();
       var id_owner_to = $('.form_barang select[name=o_id]').val();
       var id_owner_from = "{{Auth::user()->owner_id}}";
-      // kurangi stok
-      cek_barang().then(function(response){
-        let qty = jumlah * response.data;
-        axios({
-        method: 'post',
-        url: 'kurangi_stock',
-        data: {
-          id_barang: id_barang,
-          qty: qty,
-          id_owner: id_owner_from
-          }
-        });
-      });
-
-      // Tambahi stok
-      cek_barang().then(function(response){
-        let qty = jumlah * response.data;
-        axios({
-        method: 'post',
-        url: 'tambahi_stock',
-        data: {
-          id_barang: id_barang,
-          qty: qty,
-          id_owner: id_owner_to
-          }
-        });
-      });
 
       var attr=" nama_barang='"+nama_barang+"' id_barang='"+id_barang+"' satuan='"+satuan+"' jumlah='"+jumlah+"'  o_id='"+id_owner_to+"' ";
       var row=""+
@@ -407,42 +342,7 @@ var formBarang = $(".form_barang");
       var id_owner_to = $(this).parents('tr:first').attr('to');
       var id_owner_from = $(this).parents('tr:first').attr('from');
       // Kurangi Stock
-      axios({
-        method: 'get',
-        url: '{{ url('cek_item') }}'+ '/' + b_id + '/' + u_id,
-        responseType: 'stream'
-      }).then(function (response) {
-          let qty = qty_del * response.data;
-          axios({
-          method: 'post',
-          url: 'kurangi_stock',
-          data: {
-            id_barang: id_barang_del,
-            qty: qty,
-            id_owner:id_owner_to
-            }
-          });
 
-        });
-
-      // Tambahi stok
-      axios({
-        method: 'get',
-        url: '{{ url('cek_item') }}'+ '/' + b_id + '/' + u_id,
-        responseType: 'stream'
-      }).then(function (response) {
-          let qty = qty_del * response.data;
-          axios({
-          method: 'post',
-          url: 'tambahi_stock',
-          data: {
-            id_barang: id_barang_del,
-            qty: qty,
-            id_owner:id_owner_from
-            }
-          });
-
-        });
 
       $(this).parents('tr').remove();
 

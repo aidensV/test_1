@@ -85,7 +85,7 @@
                       <a class="nav-link" href="{{url('data_item')}}">Data Item</a>
                   </li>
                   <li class="nav-item">
-                      <a class="nav-link" href="{{url('data_unit')}}">Data Satuan</a>
+                      <a class="nav-link" href="{{url('data_unit')}}">Data Unit</a>
                   </li>
                   <li class="nav-item">
                       <a class="nav-link" href="{{url('data_stock')}}">Data Stock</a>
@@ -98,6 +98,12 @@
                   </li>
                   <li class="nav-item">
                       <a class="nav-link" href="{{url('distribution')}}">Distribution</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="{{url('order/create')}}">Order</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="{{url('order')}}">List Order</a>
                   </li>
                   <li class="nav-item">
                       <a class="nav-link" href="{{url('master_user')}}">Manajemen User</a>
