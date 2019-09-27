@@ -25,12 +25,12 @@ Route::get('get_data_barang/{id}','salesController@get_data_barang')->name('get_
 Route::get('cek_item/{barang}/{unit}','salesController@cek_item');
 Route::get('cek_qty/{qty}/{owner}','StockController@cek_qty');
 Route::get('data_user','UserController@listData')->name('data_user');
-Route::PATCH('master_user_change_password/{id}','UserController@update_password');
+// Route::PATCH('master_user_change_password/{id}','UserController@update_password');
 Route::post('update_qty','OrderController@update_qty')->name('update_qty');
 Route::post('update_unit','OrderController@update_unit')->name('update_unit');
 Route::post('update_status_order','OrderController@update_status_order')->name('update_status_order');
-Route::post('kurangi_stock','StockController@kurangi_stock');
-Route::post('tambahi_stock','StockController@tambahi_stock');
+Route::post('kurangi_stock','StockController@kurangi_stock')->name('kurangi_stock');
+Route::post('tambahi_stock','StockController@tambahi_stock')->name('tambahi_stock');
 
 Route::resource('data_unit','UnitController');
 Route::resource('data_owner','OwnerController');

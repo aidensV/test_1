@@ -6,16 +6,13 @@
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">×</span></button>
-            {{-- <h4 class="modal-title titleform">Form Barang</h4> --}}
           </div>
           <div class="modal-body">
-
             <div class="box-body">
               <div class="form-group">
                <label for="exampleInputPassword1">Tanggal</label>
               <input type="text" readonly class="form-control" name="tgl_kirim" value="{{date('d-m-Y')}}">
               </div>
-
               <div class="form-group">
                <label for="exampleInputPassword1">Nama Owner</label>
                <select name="o_id" id="o_id" class="form-control js-example-basic-single" style="width: 100%;">
@@ -42,21 +39,14 @@
                  @endforeach
                </select>
               </div>
-
             <div class="form-group col-md-6">
               <label for="exampleInputPassword1">Qty</label>
-              <input type="number" class="form-control text-right nocoma" onblur="cekQty(this.value)" value="0" name="jumlah">
-              {{-- <label class="fmt-nominal pull-right">0</label> --}}
+              <input type="number" class="form-control text-right nocoma" value="0" name="jumlah">
               <p id="message_qty" style="color:red;font-weight:bold"></p>
             </div>
-
-
-            {{-- <label class="pull-right">0</label> --}}
-
             </div>
           </div>
           <!-- /.box-body -->
-
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-warning pull-left" data-dismiss="modal">Batal</button>

@@ -1,11 +1,5 @@
 @extends('welcome')
 @section('content')
-
-<div class="">
-
-    {{-- <a href="{{route('data_owner.create')}}" class="btn btn-primary" style="float: left;" name="button">Tambah</a> --}}
-</div>
-
 <table id="example" class="table table-striped table-bordered" style="width:100%">
     <thead>
         <tr>

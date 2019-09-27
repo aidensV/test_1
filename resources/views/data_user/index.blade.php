@@ -2,10 +2,8 @@
 @section('content')
 
 <div class="">
-{{-- <a onclick="addForm()"  style="margin-bottom:20px;margin-left:10px;" class="card-body-title"><button class="btn btn-primary"><i class="fa  fa-plus-square-o"></i> Tambah</button></a> --}}
     <a onclick="addForm()" class="btn btn-primary" style="color: #fff ;float: left;" name="button">Tambah</a>
 </div>
-
 <table id="datatable1" class="table table-bordered table-striped">
     <thead>
         <tr>
@@ -18,28 +16,21 @@
     <tbody>
     </tbody>
 </table>
-
 @include('data_user.create')
 @endsection
 
 @section('js')
-
 <script type="text/javascript">
-
-function check_pass() {
-
-  // console.log(document.getElementById('confirm_password'));
-    if (document.getElementById('password1').value ==
+    function check_pass() {
+        if (document.getElementById('password1').value ==
             document.getElementById('confirm_password').value) {
-        document.getElementById('btn_save').disabled = false;
-        $('#message').html('Matching').css('color', 'green');
-    } else {
-        document.getElementById('btn_save').disabled = true;
-        $('#message').html('Not Matching').css('color', 'red');
-
+            document.getElementById('btn_save').disabled = false;
+            $('#message').html('Matching').css('color', 'green');
+        } else {
+            document.getElementById('btn_save').disabled = true;
+            $('#message').html('Not Matching').css('color', 'red');
+        }
     }
-}
-
 
     var table, save_method;
     $(function() {
@@ -63,7 +54,6 @@ function check_pass() {
                     success: function(data) {
                         $('#modal-form').modal('hide');
                         table.ajax.reload();
-                        // alert(response.msg);
                     },
                     error: function() {
                         alert("Tidak dapat menyimpan data!");
@@ -77,9 +67,7 @@ function check_pass() {
         $('#modal-change form').validator().on('submit', function(e) {
             if (!e.isDefaultPrevented()) {
                 var id = $('#id').val();
-                console.log(save_method);
-                if (save_method == "add") url = "{{ route('master_user.store') }}";
-                else url = "master_user_change_password/" + id;
+                url = "master_user/" + id;
                 $.ajax({
                     url: url,
                     type: "POST",
@@ -87,7 +75,6 @@ function check_pass() {
                     success: function(data) {
                         $('#modal-change').modal('hide');
                         table.ajax.reload();
-                        // alert(response.msg);
                     },
                     error: function() {
                         alert("Tidak dapat menyimpan data!");
@@ -124,7 +111,6 @@ function check_pass() {
                 var element2 = document.getElementById("div3");
                 element.parentNode.removeChild(element);
                 element2.parentNode.removeChild(element2);
-
             },
             error: function() {
                 alert("Tidak dapat menampilkan data !!!");
@@ -136,7 +122,6 @@ function check_pass() {
         save_method = "edit";
         $('input[name=_method]').val('PATCH');
         $('#modal-change form')[0].reset();
-        console.log(id);
         $.ajax({
             url: "master_user/" + id + "/edit",
             type: "GET",
@@ -165,7 +150,6 @@ function check_pass() {
                 },
                 success: function(data) {
                     table.ajax.reload();
-                    // location.reload();
                 },
                 error: function() {
                     alert("Tidak dapat menghapus data!");

@@ -17,7 +17,7 @@ class ItemController extends Controller
     public function index()
     {
 
-      
+
         $item = Item::join('m_unit','i_unit1','=','u_id')->get();
         // dd($item);
         return view('data_item.index',compact('item'))->with('no',1);
@@ -53,27 +53,9 @@ class ItemController extends Controller
       $item->i_unitcompare3 = $request['i_unitcompare_3'] ;
       $item->i_price = $request['i_price'] ;
       $item->save();
-      // dd($item);
       return redirect('data_item');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
       $item = Item::find($id);

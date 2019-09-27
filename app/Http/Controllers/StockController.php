@@ -128,8 +128,8 @@ class StockController extends Controller
     {
 
       $get_item = Stock::where('s_id_item',$request->id_barang)->where('s_id_owner',$request->id_owner)->get();
-      $qtyAwal = '';
-      $id_item = '';
+      $qtyAwal = 0;
+      $id_item = 0;
 
       foreach ($get_item as $key => $value) {
         $id_item = $value->s_id;
@@ -137,7 +137,6 @@ class StockController extends Controller
       }
 
       $qtyTotal = $qtyAwal - (int)$request->qty ;
-
       $stock = Stock::find($id_item);
       // $stock
       $stock->s_qty = $qtyTotal;
@@ -169,5 +168,5 @@ class StockController extends Controller
 
     }
 
-  
+
 }

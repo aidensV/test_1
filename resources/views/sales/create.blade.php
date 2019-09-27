@@ -6,12 +6,9 @@
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span></button>
-                    {{-- <h4 class="modal-title titleform">Form Barang</h4> --}}
                 </div>
                 <div class="modal-body">
-
                     <div class="box-body">
-
                         <div class="form-group">
                             <label for="exampleInputPassword1">Nama Owner</label>
                             <select name="o_id" id="o_id" class="form-control js-example-basic-single" style="width: 100%;">
@@ -43,7 +40,6 @@
                                     <option value="{{$list->u_id}}">{{$list->u_name}}</option>
                                     @endforeach
                                 </select>
-                                {{-- <label class="fmt-nominal pull-right">0</label> --}}
                             </div>
 
                             <div class="form-group col-md-6">
@@ -52,7 +48,6 @@
                                 <label class="fmt-nominal pull-right">0</label>
                             </div>
                             <p id="message_qty" style="color:red;font-weight:bold"></p>
-                            {{-- <label class="pull-right">0</label> --}}
                         </div>
 
                         <div class="form-group">

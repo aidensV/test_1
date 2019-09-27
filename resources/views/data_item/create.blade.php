@@ -1,6 +1,5 @@
 @extends('welcome')
 @section('content')
-
 <form action="{{route('data_item.store')}}" method="post">
     @csrf
     <div class="form-group">
@@ -45,13 +44,10 @@
             <input type="text" class="form-control" name="i_unitcompare_3" id="inputPassword4" >
         </div>
     </div>
-
-
     <div class="form-group">
         <label for="exampleInputEmail1">Harga</label>
-        <input type="text" name="i_price" class="form-control" placeholder="Nama">
+        <input type="text" name="i_price" class="form-control" placeholder="Rp.900.00">
     </div>
-
     <button type="submit" class="btn btn-primary">Simpan</button>
-</form  >
+</form>
 @endsection

@@ -8,33 +8,13 @@ use App\Owner;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
         $owner = Owner::all();
         return view('data_user.index',compact('owner'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
       $users = new User;
@@ -44,57 +24,24 @@ class UserController extends Controller
       $users -> save();
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
         $users = User::find($id);
         echo json_encode($users);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
       $users = User::find($id);
-      // $users ->owner_id = $request['o_id'];
-      $users ->username = $request['username'];
-      $users -> update();
-    }
-    public function update_password(Request $request, $id)
-    {
-      $users = User::find($id);
-      // $users ->owner_id = $request['o_id'];
-      $users ->password = bcrypt($request['password1']);
+      if ($request['password1']) {
+        $users ->password = bcrypt($request['password1']);
+      }
+      if ($request['username']) {
+        $users ->username = $request['username'];
+      }
       $users -> update();
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
       $users = User::find($id);

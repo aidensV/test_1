@@ -19,12 +19,10 @@ class StockDistributionController extends Controller
      */
     public function index()
     {
-      $id_owner = Auth::User()->owner_id;
-      $item = Stock::join('m_item','s_id_item','=','i_id')->where('s_id_owner',$id_owner)->get();
-      $owner = Owner::all();
-      $unit = Unit::all();
-      $dist = Distribution::join('m_owner','from','=','o_id')->join('d_stock_distribution_dt','id','=','stock_distribution_id')->where('status','s')->get();
-      return view('distribution.index',compact('owner','item','unit','dist'))->with('no',1);
+      $dist = Distribution::join('m_owner','from','=','o_id')
+      ->where('status','s')
+      ->get();
+      return view('distribution.index',compact('dist'))->with('no',1);
     }
 
     /**
@@ -91,7 +89,6 @@ class StockDistributionController extends Controller
       'qty' => $input['jumlah'][$i],
       'unit' => $input['satuan'][$i]
     ];
-
     DetailDistribution::create($data);
     }
   }
@@ -104,7 +101,13 @@ class StockDistributionController extends Controller
      */
     public function show($id)
     {
-        //
+      $dist = Distribution::join('m_owner','from','=','o_id')
+      ->join('d_stock_distribution_dt','id','=','stock_distribution_id')
+      ->join('m_item','item_id','=','i_id')
+      ->where('stock_distribution_id',$id)
+      ->get();
+      $unit = Unit::all();
+      return view('distribution.show',compact('dist','unit'))->with('no',1);
     }
 
     /**
@@ -139,7 +142,6 @@ class StockDistributionController extends Controller
     public function destroy($id)
     {
       $dist_detail_id = DetailDistribution::join('d_stock_distribution','stock_distribution_id','=','id')->where('stock_distribution_id',$id)->get();
-      // dd($dist_detail_id);
       foreach ($dist_detail_id as $key => $value) {
       $stock_add = Stock::where('s_id_owner',$value->destination)->where('s_id_item',$value->item_id)->first();
       $stock_add->s_qty = $stock_add->s_qty + $value->qty;
